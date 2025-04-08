@@ -6,6 +6,9 @@ import { apiUrl } from '../constants';
 import useSuccessMessage from '../hooks/useSuccessMessage';
 import useUsers from '../hooks/useUsers';
 import CreateUser from './CreateUser';
+import ErrorMessage from './ErrorMessage';
+import LoadingMessage from './LoadingMessage';
+import SuccessMessage from './SuccessMessage';
 import Users from './Users';
 
 type UserInterfaceProps = {
@@ -13,7 +16,6 @@ type UserInterfaceProps = {
 };
 
 const MemoizedCreateUser = memo(CreateUser);
-const MemoizedUsers = memo(Users);
 
 const UserInterface: FC<UserInterfaceProps> = ({ backendName }): JSX.Element => {
   const {
@@ -33,26 +35,15 @@ const UserInterface: FC<UserInterfaceProps> = ({ backendName }): JSX.Element => 
   return (
     <>
       <h1>{backendName}</h1>
-      {loading && <p className="animate-pulse">Loading...</p>}
-      {error && (
-        <div className="text-red-500 animate-pulse">
-          <p>{error}</p>
-          <button onClick={() => window.location.reload()} className="underline">
-            Retry
-          </button>
-        </div>
-      )}
+      {loading && <LoadingMessage />}
+      {error && <ErrorMessage error={error} />}
       <MemoizedCreateUser
         handleCreateNewUser={handleCreateUser}
         handleUpdateUser={handleUpdateUser}
         isEditing={isEditing}
         setIsEditing={setIsEditing}
       />
-      {success && (
-        <p className={`text-green-500 transition-opacity duration-500 ${showSuccess ? 'opacity-100' : 'opacity-0'}`}>
-          {success}
-        </p>
-      )}
+      {success && <SuccessMessage showSuccess={showSuccess} success={success} />}
       <Users
         handleDeleteUser={handleDeleteUser}
         users={users}

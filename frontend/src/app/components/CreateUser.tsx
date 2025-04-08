@@ -9,14 +9,12 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { zodResolver } from '@hookform/resolvers/zod';
 import type { Dispatch, FC, SetStateAction } from 'react';
-import { useEffect, useRef } from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
+import useInputFocus from '../hooks/useInputFocus';
+import useUserForm from '../hooks/useUserForm';
 import type { User } from '../hooks/useUsers';
 
-type CreateUserProps = {
+export type CreateUserProps = {
   handleCreateNewUser: (newUser: { email: string; name: string; }) => Promise<void>;
   handleUpdateUser: (updatedUser: User) => Promise<void>;
   isEditing: {
@@ -29,54 +27,22 @@ type CreateUserProps = {
   }>>;
 };
 
-const formSchema = z.object({
-  name: z.string().min(1, { message: 'Name is required' }),
-  email: z.string().email({ message: 'Invalid email address' }),
-});
-
-type FormValues = z.infer<typeof formSchema>;
-
 const CreateUser: FC<CreateUserProps> = ({
   handleCreateNewUser,
   handleUpdateUser,
   isEditing,
   setIsEditing,
 }) => {
-  const { editing, id } = isEditing;
+  const { editing } = isEditing;
 
-  // Create a ref for the name input field
-  const nameInputRef = useRef<HTMLInputElement | null>(null);
+  const nameInputRef = useInputFocus(editing);
 
-  // Focus the name input field when editing is true
-  useEffect(() => {
-    if (editing && nameInputRef.current) {
-      nameInputRef.current.focus();
-    }
-  }, [editing]);
-
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: '',
-      email: '',
-    },
+  const { form, onSubmit } = useUserForm({
+    handleCreateNewUser,
+    handleUpdateUser,
+    isEditing,
+    setIsEditing,
   });
-
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    editing
-      ? handleUpdateUser({
-        id,
-        ...values,
-      })
-      : handleCreateNewUser(values);
-
-    form.reset();
-
-    setIsEditing({
-      editing: false,
-      id: '',
-    });
-  };
 
   return (
     <section className={`flex flex-col gap-4 p-4 rounded-lg`}>
