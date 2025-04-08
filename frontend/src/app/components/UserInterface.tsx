@@ -10,6 +10,7 @@ import ErrorMessage from './ErrorMessage';
 import LoadingMessage from './LoadingMessage';
 import SuccessMessage from './SuccessMessage';
 import Users from './Users';
+import UsersCodeBlock from './UsersCodeBlock';
 
 type UserInterfaceProps = {
   backendName: string;
@@ -32,6 +33,8 @@ const UserInterface: FC<UserInterfaceProps> = ({ backendName }): JSX.Element => 
 
   const showSuccess = useSuccessMessage(success);
 
+  console.log('users', users);
+
   return (
     <>
       <h1>{backendName}</h1>
@@ -44,11 +47,16 @@ const UserInterface: FC<UserInterfaceProps> = ({ backendName }): JSX.Element => 
         setIsEditing={setIsEditing}
       />
       {success && <SuccessMessage showSuccess={showSuccess} success={success} />}
-      <Users
-        handleDeleteUser={handleDeleteUser}
-        users={users}
-        setIsEditing={setIsEditing}
-      />
+      {!!users && (
+        <div className="flex flex-row gap-4">
+          <Users
+            users={users}
+            handleDeleteUser={handleDeleteUser}
+            setIsEditing={setIsEditing}
+          />
+          <UsersCodeBlock users={users} />
+        </div>
+      )}
       {users.length === 0 && <p>No users found. Add a new user to get started.</p>}
     </>
   );
