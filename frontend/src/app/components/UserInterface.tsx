@@ -1,7 +1,7 @@
 'use client';
 
 import type { FC, JSX } from 'react';
-import { memo } from 'react';
+import { lazy, Suspense } from 'react';
 import { apiUrl } from '../constants';
 import useSuccessMessage from '../hooks/useSuccessMessage';
 import useUsers from '../hooks/useUsers';
@@ -9,14 +9,14 @@ import CreateUser from './CreateUser';
 import ErrorMessage from './ErrorMessage';
 import LoadingMessage from './LoadingMessage';
 import SuccessMessage from './SuccessMessage';
-import Users from './Users';
-import UsersCodeBlock from './UsersCodeBlock';
+
+// Lazy load components
+const Users = lazy(() => import('./Users'));
+const UsersCodeBlock = lazy(() => import('./UsersCodeBlock'));
 
 type UserInterfaceProps = {
   backendName: string;
 };
-
-const MemoizedCreateUser = memo(CreateUser);
 
 const UserInterface: FC<UserInterfaceProps> = ({ backendName }): JSX.Element => {
   const {
@@ -33,30 +33,30 @@ const UserInterface: FC<UserInterfaceProps> = ({ backendName }): JSX.Element => 
 
   const showSuccess = useSuccessMessage(success);
 
-  console.log('users', users);
-
   return (
     <>
       <h1>{backendName}</h1>
       {loading && <LoadingMessage />}
       {error && <ErrorMessage error={error} />}
-      <MemoizedCreateUser
-        handleCreateNewUser={handleCreateUser}
-        handleUpdateUser={handleUpdateUser}
-        isEditing={isEditing}
-        setIsEditing={setIsEditing}
-      />
-      {success && <SuccessMessage showSuccess={showSuccess} success={success} />}
-      {!!users && (
-        <div className="flex flex-row gap-4">
-          <Users
-            users={users}
-            handleDeleteUser={handleDeleteUser}
-            setIsEditing={setIsEditing}
-          />
-          <UsersCodeBlock users={users} />
-        </div>
-      )}
+      {(users.length > 0 && success) && <SuccessMessage showSuccess={showSuccess} success={success} />}
+      <div className="flex flex-col lg:flex-row gap-4" suppressHydrationWarning>
+        <CreateUser
+          handleCreateNewUser={handleCreateUser}
+          handleUpdateUser={handleUpdateUser}
+          isEditing={isEditing}
+          setIsEditing={setIsEditing}
+        />
+        {users.length > 0 && (
+          <Suspense fallback={<LoadingMessage />}>
+            <Users
+              users={users}
+              handleDeleteUser={handleDeleteUser}
+              setIsEditing={setIsEditing}
+            />
+            <UsersCodeBlock users={users} />
+          </Suspense>
+        )}
+      </div>
       {users.length === 0 && <p>No users found. Add a new user to get started.</p>}
     </>
   );

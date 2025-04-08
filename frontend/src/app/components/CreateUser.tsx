@@ -45,7 +45,7 @@ const CreateUser: FC<CreateUserProps> = ({
   });
 
   return (
-    <section className={`flex flex-col gap-4 p-4 rounded-lg`}>
+    <section className={`flex flex-col gap-4 p-4 rounded-lg border w-full`}>
       <h2 className="text-lg font-semibold">{editing ? 'Edit ' : 'Create '}User</h2>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
