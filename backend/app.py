@@ -90,3 +90,53 @@ def delete_user(id):
     return make_response(jsonify({'message': 'user not found'}), 404)
   except Exception as e:
     return make_response(jsonify({'message': 'error deleting user', 'error': str(e)}), 500)
+
+# Create route to return dictionary for displaying language
+@app.route('/api/flask/language', methods=['GET'])
+def get_language():
+  try:
+    language = [
+      {
+        "createUser": {
+          "heading": {
+            "create": "Create User",
+            "edit": "Edit User",
+          },
+          "formElements": {
+            "name": {
+              "label": "Name",
+              "type": "text",
+              "description": "Enter your name",
+              "required": True
+            },
+            "email": {
+              "label": "Email",
+              "type": "email",
+              "description": "Enter your email",
+              "required": True
+            }
+          },
+          "callToActions": "Create User",
+        },
+        "users": {
+          "heading": "Users",
+          "callToActions": {
+            "edit": "Edit",
+            "delete": "Delete",
+          },
+          "confirmation": {
+            "alertDialogTitle": "Are you sure you want to delete this user?",
+            "alertDialogDescription": "This action cannot be undone. This will permanently delete your account and remove your data from our servers.",
+            "alertDialogCancel": "Cancel",
+            "alertDialogAction": "Continue",
+          }
+        },
+        "dataShape": {
+          "heading": "Users JSON"
+        },
+        "noUsersFound": "No users found. Add a new user to get started."
+      }
+    ]
+    return make_response(jsonify(language), 200)
+  except Exception as e:
+    return make_response(jsonify({'message': 'error getting language', 'error': str(e)}), 500)
