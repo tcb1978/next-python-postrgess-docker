@@ -22,7 +22,7 @@ export type UseUsersReturn = {
   setIsEditing: Dispatch<SetStateAction<{ editing: boolean; id: string }>>;
 };
 
-const useUsers = (apiUrl: string): UseUsersReturn => {
+const useUsers = (usersApiUrl: string): UseUsersReturn => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -37,7 +37,7 @@ const useUsers = (apiUrl: string): UseUsersReturn => {
     setError(null);
     setSuccess(null);
     try {
-      const response = await fetch(apiUrl);
+      const response = await fetch(usersApiUrl);
       if (!response.ok) {
         throw new Error('Failed to fetch users');
       }
@@ -49,7 +49,7 @@ const useUsers = (apiUrl: string): UseUsersReturn => {
     } finally {
       setLoading(false);
     }
-  }, [apiUrl, isEditing]);
+  }, [usersApiUrl]);
 
   const handleCreateUser = useCallback(
     async (newUser: { email: string; name: string }) => {
@@ -57,7 +57,7 @@ const useUsers = (apiUrl: string): UseUsersReturn => {
       setError(null);
       setSuccess(null);
       try {
-        const response = await fetch(apiUrl, {
+        const response = await fetch(usersApiUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -76,7 +76,7 @@ const useUsers = (apiUrl: string): UseUsersReturn => {
         setLoading(false);
       }
     },
-    [apiUrl]
+    [usersApiUrl]
   );
 
   const handleUpdateUser = useCallback(
@@ -85,7 +85,7 @@ const useUsers = (apiUrl: string): UseUsersReturn => {
       setError(null);
       setSuccess(null);
       try {
-        const response = await fetch(`${apiUrl}/${updatedUser.id}`, {
+        const response = await fetch(`${usersApiUrl}/${updatedUser.id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -106,7 +106,7 @@ const useUsers = (apiUrl: string): UseUsersReturn => {
         setLoading(false);
       }
     },
-    [apiUrl]
+    [usersApiUrl]
   );
 
   const handleDeleteUser = useCallback(
@@ -123,7 +123,7 @@ const useUsers = (apiUrl: string): UseUsersReturn => {
       const userToDeleteName = users.find((user) => user.id === id)?.name;
 
       try {
-        const response = await fetch(`${apiUrl}/${id}`, {
+        const response = await fetch(`${usersApiUrl}/${id}`, {
           method: 'DELETE',
         });
         if (!response.ok) {
@@ -137,7 +137,7 @@ const useUsers = (apiUrl: string): UseUsersReturn => {
         setLoading(false);
       }
     },
-    [apiUrl]
+    [usersApiUrl]
   );
 
   useEffect(() => {

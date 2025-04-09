@@ -1,1 +1,2 @@
-export const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/flask/users';
+export const usersApiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/flask/users';
+export const languageApiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/flask/language';

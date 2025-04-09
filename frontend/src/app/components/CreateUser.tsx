@@ -10,7 +10,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import type { Dispatch, FC, SetStateAction } from 'react';
+import { languageApiUrl } from '../constants';
 import useInputFocus from '../hooks/useInputFocus';
+import useLanguageDictionary from '../hooks/useLanguageDictionary';
 import useUserForm from '../hooks/useUserForm';
 import type { User } from '../hooks/useUsers';
 
@@ -34,7 +36,6 @@ const CreateUser: FC<CreateUserProps> = ({
   setIsEditing,
 }) => {
   const { editing } = isEditing;
-
   const nameInputRef = useInputFocus(editing);
 
   const { form, onSubmit } = useUserForm({
@@ -44,9 +45,29 @@ const CreateUser: FC<CreateUserProps> = ({
     setIsEditing,
   });
 
+  const { createUserDictionary } = useLanguageDictionary(languageApiUrl);
+  if (!createUserDictionary) return null;
+  const {
+    heading: {
+      edit,
+      create
+    },
+    formElements: {
+      name: {
+        label,
+        description,
+      },
+      email: {
+        label: emailLabel,
+        description: emailDescription,
+      }
+    },
+    callToActions
+  } = createUserDictionary;
+
   return (
     <section className={`flex flex-col gap-4 p-4 rounded-lg border w-full`}>
-      <h2 className="text-lg font-semibold">{editing ? 'Edit ' : 'Create '}User</h2>
+      <h2 className="text-lg font-semibold">{editing ? edit : create}</h2>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <FormField
@@ -54,13 +75,14 @@ const CreateUser: FC<CreateUserProps> = ({
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>User Name</FormLabel>
+                <FormLabel>
+                  {label}
+                </FormLabel>
                 <FormControl>
-                  {/* Attach the ref to the Input component */}
-                  <Input placeholder="name" {...field} ref={nameInputRef} />
+                  <Input placeholder={label} {...field} ref={nameInputRef} />
                 </FormControl>
                 <FormDescription>
-                  This is your public display name.
+                  {description}
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -71,18 +93,22 @@ const CreateUser: FC<CreateUserProps> = ({
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>User Email</FormLabel>
+                <FormLabel>
+                  {emailLabel}
+                </FormLabel>
                 <FormControl>
-                  <Input placeholder="email" {...field} />
+                  <Input placeholder={emailLabel} {...field} />
                 </FormControl>
                 <FormDescription>
-                  This is your public display email.
+                  {emailDescription}
                 </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <Button type="submit">Submit</Button>
+          <Button type="submit">
+            {callToActions}
+          </Button>
         </form>
       </Form>
     </section>
